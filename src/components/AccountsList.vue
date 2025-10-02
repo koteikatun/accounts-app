@@ -21,7 +21,7 @@ const onRemove = (id: string) => {
 <template>
     <div>
         <div class="header">
-            <h1>Учетные записи</h1>
+            <h2>Учетные записи</h2>
             <el-button type="default" :icon="Plus" @click="onAdd"></el-button>
         </div>
         <div class="main-container">
@@ -31,10 +31,18 @@ const onRemove = (id: string) => {
                 </el-icon>
                 <p> Для указания нескольких меток для одной пары логин/пароль используйте разделитель ;</p>
             </div>
+            <div class="accounts-form">
+                <div class="accounts-header">
+                    <div>Метка</div>
+                    <div>Тип записи</div>
+                    <div>Логин</div>
+                    <div>Пароль</div>
+                </div>
 
-            <div class="accounts-list">
-                <AccountItem v-for="account in store.accounts" :key="account.id" :account="account" @update="onUpdate"
-                    @remove="onRemove" />
+                <div class="accounts-body">
+                    <AccountItem v-for="account in store.accounts" :key="account.id" :account="account"
+                        @update="onUpdate" @remove="onRemove" />
+                </div>
             </div>
         </div>
     </div>
@@ -45,10 +53,12 @@ const onRemove = (id: string) => {
     display: flex;
     align-items: center;
     gap: 20px;
+    margin-left: 20px;
 }
 
 .main-container {
     width: 100%;
+    margin-left: 20px;
 }
 
 .hint-container {
@@ -60,10 +70,30 @@ const onRemove = (id: string) => {
     min-width: 75%;
 }
 
-.accounts-list {
-    margin-top: 16px;
+.accounts-form {
+    padding: 8px 0px;
+}
+
+.accounts-header {
+    display: grid;
+    grid-template-columns: 200px 200px 200px 200px 100px;
+    gap: 15px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #b5b6b6;
+    padding-bottom: 10px;
+}
+
+.accounts-body {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+}
+
+.accounts-body .account-row {
+    display: grid;
+    grid-template-columns: 200px 200px 200px 200px 100px;
+    gap: 15px;
+    align-items: center;
 }
 </style>

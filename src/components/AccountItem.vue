@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { reactive, watch, toRefs } from 'vue'
+import { reactive, watch } from 'vue'
 import { Account } from '../types/Account'
-import { defineEmits, defineProps } from 'vue'
 
 const props = defineProps<{ account: Account }>()
 const emit = defineEmits<{
