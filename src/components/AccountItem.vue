@@ -50,24 +50,28 @@ const onTypeChange = (value: string) => {
 
 <template>
     <div class="account-row">
-        <div class="row">
+        <div>
             <el-input v-model="local.rawLabels" placeholder="Метки" :maxlength="50" clearable />
             <div v-if="errors.labels">{{ errors.labels }}</div>
         </div>
-        <div class="row">
+
+        <div>
             <el-select v-model="local.type" placeholder="Тип записи" @change="onTypeChange">
                 <el-option label="LDAP" value="LDAP" />
                 <el-option label="Локальная" value="Локальная" />
             </el-select>
         </div>
-        <div class="row">
+
+        <div :class="{ 'login-container': true, 'login-full-width': local.type === 'LDAP' }">
             <el-input v-model="local.login" placeholder="Логин" clearable />
             <div v-if="errors.login">{{ errors.login }}</div>
         </div>
-        <div class="row">
+
+        <div v-if="local.type === 'Локальная'">
             <el-input type="password" v-model="local.password" placeholder="Пароль" clearable />
             <div v-if="errors.password">{{ errors.password }}</div>
         </div>
+
         <div>
             <el-button @click="onRemove">
                 <el-icon>
@@ -78,15 +82,19 @@ const onTypeChange = (value: string) => {
     </div>
 </template>
 
+
 <style scoped>
+.login-container {
+    grid-column: auto;
+}
+
+.login-full-width {
+    grid-column: 3 / 5;
+}
+
 .account-row {
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.account-row .el-input,
-.account-row .el-select {
-    max-width: 200px;
 }
 </style>
