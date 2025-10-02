@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import { Account } from '../types/Account'
+import { reactive, watch } from 'vue';
+import { Account } from '../types/Account';
+import { parserMarks } from '../utils/parserMarks';
+import { validateLogin, validatePassword } from '../utils/validation';
 
 const props = defineProps<{ account: Account }>()
 const emit = defineEmits<{
@@ -40,10 +42,37 @@ const onRemove = () => {
 const onTypeChange = (value: string) => {
     if (value === 'LDAP') {
         local.password = ''
-        emit('update', local.id, { type: 'LDAP', password: null })
+        emit('update', local.id, { type: 'LDAP', password: null });
     } else {
-        emit('update', local.id, { type: 'Локальная', password: local.password ?? '' })
+        emit('update', local.id, { type: 'Локальная', password: local.password ?? '' });
     }
+}
+
+const onLabelsValid = () => {
+    errors.labels = null;
+    const labels = parserMarks(local.rawLabels);
+    emit('update', local.id, { rawLabels: local.rawLabels, labels });
+}
+
+const onLoginBlur = () => {
+    const value = validateLogin(local.login)
+    if (!value.valid) {
+        errors.login = value.message!
+        return
+    }
+    errors.login = null
+    emit('update', local.id, { login: local.login })
+}
+
+const onPasswordBlur = () => {
+    const value = validatePassword(local.password, local.type as any)
+    if (!value.valid) {
+        errors.password = value.message!
+        return
+    }
+    errors.password = null
+    // для LDAP пароль хранится как null
+    emit('update', local.id, { password: local.type === 'LDAP' ? null : local.password })
 }
 
 </script>
@@ -51,7 +80,8 @@ const onTypeChange = (value: string) => {
 <template>
     <div class="account-row">
         <div>
-            <el-input v-model="local.rawLabels" placeholder="Метки" :maxlength="50" clearable />
+            <el-input v-model="local.rawLabels" placeholder="Значение" :maxlength="50" @blur="onLabelsValid"
+                :class="{ invalid: errors.labels }" clearable />
             <div v-if="errors.labels">{{ errors.labels }}</div>
         </div>
 
@@ -63,12 +93,13 @@ const onTypeChange = (value: string) => {
         </div>
 
         <div :class="{ 'login-container': true, 'login-full-width': local.type === 'LDAP' }">
-            <el-input v-model="local.login" placeholder="Логин" clearable />
+            <el-input v-model="local.login" placeholder="Значение" :maxlength="100" @blur="onLoginBlur" clearable />
             <div v-if="errors.login">{{ errors.login }}</div>
         </div>
 
         <div v-if="local.type === 'Локальная'">
-            <el-input type="password" v-model="local.password" placeholder="Пароль" clearable />
+            <el-input type="password" v-model="local.password" placeholder="Пароль" :maxlength="100"
+                @blur="onPasswordBlur" clearable />
             <div v-if="errors.password">{{ errors.password }}</div>
         </div>
 
